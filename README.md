@@ -34,12 +34,14 @@ Para subir o banco NoSQL sem necessidade de instalação nativa:
 ```bash
 docker run --name meu-cassandra -d -p 9042:9042 cassandra:latest
 ```
+<br>
 
 Verifique se o nó está ativo (UN - Up/Normal):
 
 ```bash
 docker exec -it meu-cassandra nodetool status
 ```
+<br>
 
 2. Modelagem Orientada a Consultas (CQL)
 Acesse o terminal interativo cqlsh:
@@ -47,6 +49,7 @@ Acesse o terminal interativo cqlsh:
 ```bash
 docker exec -it meu-cassandra cqlsh
 ```
+<br>
 
 Execute a criação do Keyspace e da Tabela otimizada para consultas por cliente ordenadas por data:
 
@@ -58,11 +61,14 @@ WITH replication = {
     'replication_factor': 1
 };
 ```
+<br>
+
 Selecionando o Keyspace criado:
 
 ```bash
 USE e_commerce;
 ```
+<br>
 
 Criar Tabela (Partition Key + Clustering Columns):
 ```bash
@@ -76,6 +82,7 @@ CREATE TABLE IF NOT EXISTS compras_por_cliente (
     PRIMARY KEY ((cliente_id), data_compra, compra_id)
 ) WITH CLUSTERING ORDER BY (data_compra DESC, compra_id ASC);
 ```
+<br>
 
 ⚡ Alteração e Adaptação do consumer_pyspark.py
 Para conectar a engine de streaming do PySpark ao Cassandra, realizamos três grandes modificações no script do consumidor utilizado no repositório anterior:
@@ -94,6 +101,7 @@ def criar_sessao_spark():
         .config("spark.cassandra.connection.port", "9042") \
         .getOrCreate()
 ```
+<br>
 
 2. Mapeamento dos Dados para o Schema do Cassandra
 Transformação dos tipos de dados do evento JSON recebido pelo Kafka para os tipos nativos da tabela Cassandra (UUID, Timestamp, Decimal e List):
@@ -109,6 +117,7 @@ df_cassandra = df_kafka.selectExpr("CAST(value AS STRING) as json_payload") \
         expr("transform(data.produtos_comprados, x -> x.nome_produto)").alias("produtos")
     )
 ```
+<br>
 
 3. Persistência Contínua via foreachBatch
 Substituição do .format("console") pelo método de salvamento em lote por lote (append) diretamente na tabela do Keyspace:
@@ -126,6 +135,8 @@ query = df_cassandra.writeStream \
     .option("checkpointLocation", "./checkpoints/kafka_to_cassandra") \
     .start()
 ```
+<br>
+
 Porém para facilitar deixei as alterações salvas neste repositório, das alterações no consumer_pyspark.py, para a conexão no banco de dados NoSQL do Apache Cassandra.
 
 ---
@@ -136,18 +147,26 @@ Inicie o consumidor PySpark:
 ```bash
 python consumer_pyspark.py
 ```
+<br>
 
 Execute o gerador de vendas (Producer):
 ```bash
 python
  producer.py
 ```
+<br>
 
 Consulte as vendas persistidas no Cassandra pelo cqlsh:
 ```bash
 SELECT count(*) FROM e_commerce.compras_por_cliente;
 SELECT * FROM e_commerce.compras_por_cliente LIMIT 10;
 ```
+<br>
+
+![Consulta_select.png](Consulta_select.png)
+<br>
+*SELECT utilizado mais dados de terminal para demosntração*
+<br>
 
 ![Consulta.png](Consulta.png)
 <br>
