@@ -58,13 +58,14 @@ WITH replication = {
     'replication_factor': 1
 };
 ```
+Selecionando o Keyspace criado:
 
 ```bash
 USE e_commerce;
 ```
 
+Criar Tabela (Partition Key + Clustering Columns):
 ```bash
--- Criar Tabela (Partition Key + Clustering Columns)
 CREATE TABLE IF NOT EXISTS compras_por_cliente (
     cliente_id uuid,
     data_compra timestamp,
