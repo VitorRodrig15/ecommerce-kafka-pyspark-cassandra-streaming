@@ -207,14 +207,14 @@ SELECT * FROM e_commerce.compras_por_cliente LIMIT 10;
 ```
 <br>
 
-![Consulta_select.png](Consulta_select.png)
-<br>
 *SELECT utilizado mais dados de terminal para demosntração*
 <br>
+![Consulta_select.png](Consulta_select.png)
+<br>
 
+*Mostrando o processo de Consulta no Terminal*
 ![Consulta.png](Consulta.png)
 <br>
-*Mostrando o processo de Consulta no Terminal*
 
 <ElicitationsGroup message="Precisa de mais alguma documentação ou suporte para a publicação do repositório?">
   <Elicitation label="Como estruturar o commit e push das alterações no Git" query="Quais comandos Git devo usar para publicar essas atualizações no meu repositório?"/>
