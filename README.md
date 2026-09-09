@@ -20,10 +20,43 @@ Nesta nova versão, substituímos a saída em memória por **persistência estru
 
 ---
 
-## 🏗️ Arquitetura Integrada
+## 🏗️ Arquitetura da Solução
 
-[Producer Python / Faker] ➔ [Kafka Broker] ➔ [PySpark Streaming Engine] ➔ [Apache Cassandra (NoSQL)]
+```mermaid
+graph LR
+    %% Estilização dos Nós
+    classDef producer fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b;
+    classDef kafka fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#e65100;
+    classDef spark fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20;
+    classDef nosql fill:#e0f7fa,stroke:#00838f,stroke-width:2px,color:#004d40;
 
+    subgraph SG1 ["1. Ingestão de Eventos"]
+        A["🚀 Data Producer<br/>(Python + Faker)"]:::producer
+    end
+
+    subgraph SG2 ["2. Camada de Mensageria (Docker)"]
+        B["📦 Apache Kafka Broker<br/>Topic: e-commerce-vendas"]:::kafka
+        Z["🐘 Zookeeper<br/>(Cluster Manager)"]:::kafka
+        Z --- B
+    end
+
+    subgraph SG3 ["3. Processamento em Streaming"]
+        C["⚡ PySpark Engine<br/>(Structured Streaming)"]:::spark
+        D["🔄 Data Transformations<br/>(from_json + UUID Parsing)"]:::spark
+        E["📦 ForeachBatch Sink<br/>(DataStax Connector)"]:::spark
+        
+        C --> D --> E
+    end
+
+    subgraph SG4 ["4. Persistência NoSQL"]
+        F["👁️ Apache Cassandra<br/>Keyspace: e_commerce<br/>Table: compras_por_cliente"]:::nosql
+    end
+
+    %% Conexões do Fluxo Principal
+    A -->|"1. JSON Event (Socket TCP)"| B
+    B -->|"2. Read Stream (Bytes)"| C
+    E -->|"3. Append Mode (CQL UPSERT)"| F
+```
 ---
 
 ## 🚀 Passo a Passo de Instalação e Conexão com o Cassandra
