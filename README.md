@@ -57,6 +57,17 @@ graph LR
     B -->|"2. Read Stream (Bytes)"| C
     E -->|"3. Append Mode (CQL UPSERT)"| F
 ```
+
+### 🎨 O que foi alterado nesta versão:
+
+* Processamento de Dados: Em vez de apenas somar e agrupar os valores na memória para mostrar na tela, agora o código organiza os dados do pedido (gerando identificadores únicos como IDs e datas formatadas) para preparar o envio direto ao banco.
+
+* Armazenamento (Banco NoSQL): Removemos a exibição temporária no terminal e conectamos o pipeline ao Apache Cassandra, salvando cada venda diretamente no espaço de dados (e_commerce) e na tabela de compras do cliente (compras_por_cliente).
+
+* Conexão Final (Envio de Dados): Os dados são enviados de forma contínua em pequenos lotes. Se o registro for novo, ele é inserido; se já existir, ele é atualizado automaticamente sem gerar duplicadas.
+
+* Visual da Arquitetura: Adicionamos uma cor de destaque no diagrama para representar a nova camada do banco NoSQL Cassandra.
+
 ---
 
 ## 🚀 Passo a Passo de Instalação e Conexão com o Cassandra
